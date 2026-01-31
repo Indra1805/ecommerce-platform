@@ -132,25 +132,23 @@ This approach closely mirrors how authentication is handled in modern production
 
 ## 📁 Project Structure
 
-ecommerce-platform/
-├── frontend/
-│ ├── src/
-│ │ ├── components/ # Reusable UI components
-│ │ ├── pages/ # Route-level pages
-│ │ ├── context/ # Auth, Cart, Wishlist contexts
-│ │ ├── services/ # API communication layer
-│ │ └── hooks/
-│ └── public/
-│
-├── backend/
-│ ├── products/ # Product and category APIs
-│ ├── cart/ # Cart APIs
-│ ├── wishlist/ # Wishlist APIs
-│ ├── orders/ # Order creation, history, cancellation
-│ ├── users/ # Authentication logic
-│ └── manage.py
-│
-└── README.md
+ecommerce-platform:
+  frontend:
+    src:
+      components: Reusable UI components
+      pages: Route-level pages
+      context: Auth, Cart, Wishlist contexts
+      services: API communication layer
+      hooks: Custom React hooks
+    public: Static assets
+  backend:
+    products: Product and category APIs
+    cart: Cart management APIs
+    wishlist: Wishlist APIs
+    orders: Order creation, history, cancellation
+    users: Authentication and user-related logic
+    manage.py: Django entry point
+
 
 
 ---
@@ -180,18 +178,27 @@ python manage.py migrate
 python manage.py runserver
 
 
-**## Frontend**
+### Frontend
+
+```bash
 npm install
 npm run dev
 
 
-**## Possible Improvements**
 
-Payment gateway integration (e.g., Stripe)
-Extended order lifecycle (shipped, delivered)
-Pagination and filtering for orders
-Role-based admin functionality
-Improved loading skeletons and global error handling
+possible_improvements:
+  - Payment gateway integration (e.g., Stripe)
+  - Extended order lifecycle (shipped, delivered, returned)
+  - Pagination and filtering for order history
+  - Role-based access control for admin features
+  - Improved loading skeletons and global error boundaries
 
-**👤 Author**
-Built and maintained by INDRA K N
+notes: >
+  This project prioritizes engineering quality, security, and architectural clarity
+  over UI polish alone. It is intended to serve as a solid foundation for a real-world
+  e-commerce system, demonstrating secure frontend-backend integration rather than
+  acting as a marketplace or payment-ready product.
+
+author:
+  name: Virat
+
