@@ -120,4 +120,4 @@ It is intended to serve as a solid foundation for a real-world e-commerce system
 
 ## 👤 Author
 
-Built and maintained by Virat
+Built and maintained by INDRA K N
