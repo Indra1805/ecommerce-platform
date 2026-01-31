@@ -86,24 +86,27 @@ This setup keeps secrets secure while making the project easy to configure.
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
-
----
+````
 
 ### Frontend
+
 ```bash
 npm install
 npm run dev
+```
 
 ---
 
 ## 🔮 Possible Improvements
+
 The current implementation provides a strong production-ready foundation.
 The following enhancements could be added to further scale the application:
-- Payment gateway integration (e.g., Stripe)
-- Extended order lifecycle (shipped, delivered, returned)
-- Pagination and filtering for order history
-- Role-based access control for admin features
-- Improved loading skeletons and global error handling
+
+* Payment gateway integration (e.g., Stripe)
+* Extended order lifecycle (shipped, delivered, returned)
+* Pagination and filtering for order history
+* Role-based access control for admin features
+* Improved loading skeletons and global error handling
 
 ---
 
