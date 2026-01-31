@@ -180,12 +180,12 @@ python manage.py migrate
 python manage.py runserver
 
 
-### Frontend
+**## Frontend**
 npm install
 npm run dev
 
 
-### Possible Improvements
+**## Possible Improvements**
 
 Payment gateway integration (e.g., Stripe)
 Extended order lifecycle (shipped, delivered)
@@ -193,5 +193,5 @@ Pagination and filtering for orders
 Role-based admin functionality
 Improved loading skeletons and global error handling
 
-👤 Author
+**👤 Author**
 Built and maintained by INDRA K N
