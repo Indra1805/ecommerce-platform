@@ -10,30 +10,28 @@ import { useAuth } from "./AuthContext";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const { authenticated } = useAuth();
+  const { isAuthenticated } = useAuth();   // ✅ FIX
   const [cart, setCart] = useState([]);
-  const clearCart = () => {
-    setCart([]);
-  };
 
   useEffect(() => {
-    if (!authenticated) {
+    if (!isAuthenticated) {
       setCart([]);
       return;
     }
 
     fetchCart().then(setCart);
-  }, [authenticated]);
+  }, [isAuthenticated]);
 
   const addToCart = async (product) => {
     await addToCartAPI(product.id);
-    const updated = await fetchCart();
-    setCart(updated);
+    setCart(await fetchCart());
   };
 
   const updateQty = async (itemId, quantity) => {
-    const updatedItem = await updateCartQtyAPI(itemId, quantity);
-    setCart((prev) => prev.map((i) => (i.id === itemId ? updatedItem : i)));
+    const updated = await updateCartQtyAPI(itemId, quantity);
+    setCart((prev) =>
+      prev.map((i) => (i.id === itemId ? updated : i))
+    );
   };
 
   const removeFromCart = async (itemId) => {
@@ -41,21 +39,16 @@ export function CartProvider({ children }) {
     setCart((prev) => prev.filter((i) => i.id !== itemId));
   };
 
-  const isInCart = (productId) => cart.some((i) => i.product.id === productId);
+  const isInCart = (pid) =>
+    cart.some((i) => i.product.id === pid);
 
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, updateQty, removeFromCart, isInCart, clearCart }}
+      value={{ cart, addToCart, updateQty, removeFromCart, isInCart }}
     >
       {children}
     </CartContext.Provider>
   );
 }
 
-export function useCart() {
-  const ctx = useContext(CartContext);
-  if (!ctx) {
-    throw new Error("useCart must be used inside CartProvider");
-  }
-  return ctx;
-}
+export const useCart = () => useContext(CartContext);

@@ -9,7 +9,7 @@ export const fetchProducts = async () => {
 };
 
 export const fetchProductById = async (id) => {
-  const res = await apiFetch(`${BASE_URL}/products/${id}/`);
+  const res = await apiFetch(`${BASE_URL}/product/${id}/`);
   return res.json();
 };
 

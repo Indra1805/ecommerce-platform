@@ -2,67 +2,50 @@ import { createContext, useContext, useEffect, useState } from "react";
 import {
   loginUser,
   logoutUser,
-  setAccessToken,
-  clearAccessToken,
   refreshAccessToken,
+  fetchMe,
 } from "../services/auth";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [user, setUser] = useState(localStorage.getItem("username"));
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔄 Silent refresh (non-blocking)
   useEffect(() => {
-    const initAuth = async () => {
+    const init = async () => {
       try {
         await refreshAccessToken();
-        setAuthenticated(true);
+        const me = await fetchMe();
+        setUser(me);
+        setIsAuthenticated(true);
       } catch {
-        setAuthenticated(false);
+        setUser(null);
+        setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
     };
-
-    initAuth();
+    init();
   }, []);
 
-  const login = async (credentials) => {
-    const data = await loginUser(credentials);
-    setAccessToken(data.access);
-
-    localStorage.setItem("username", credentials.username);
-    setUser(credentials.username);
-    setAuthenticated(true);
+  const login = async (cred) => {
+    await loginUser(cred);
+    const me = await fetchMe();
+    setUser(me);
+    setIsAuthenticated(true);
   };
 
   const logout = async () => {
-    try {
-      console.log("LOGOUT FUNCTION CALLED");
-      await logoutUser(); // 🔥 clears refresh cookie
-    } catch {
-      // even if backend fails, proceed
-    }
-
-    clearAccessToken();
-    localStorage.removeItem("username");
-
+    await logoutUser();
     setUser(null);
-    setAuthenticated(false);
+    setIsAuthenticated(false);
   };
 
   return (
     <AuthContext.Provider
-      value={{
-        authenticated,
-        user,
-        login,
-        logout,
-        loading, // exposed if needed
-      }}
+      value={{ isAuthenticated, user, loading, login, logout }}
     >
       {children}
     </AuthContext.Provider>

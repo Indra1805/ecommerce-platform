@@ -7,16 +7,21 @@ from rest_framework import status
 from django.conf import settings
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
+from rest_framework.permissions import AllowAny, IsAuthenticated
+
 
 
 # Create your views here.
 
 class RegisterView(CreateAPIView):
+    permission_classes = [AllowAny]
     queryset = User.objects.all()
     serializer_class = RegisterSerializer
 
 
 class LoginView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
@@ -48,6 +53,8 @@ class LoginView(APIView):
 
 
 class RefreshView(APIView):
+    permission_classes = [AllowAny]
+
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
 
@@ -69,16 +76,27 @@ class RefreshView(APIView):
 
 
 class LogoutView(APIView):
+    permission_classes = [AllowAny]   # ✅ FIX
+
     def post(self, request):
-        response = Response(
-            {"message": "Logged out successfully"},
-            status=status.HTTP_200_OK
-        )
+        token = request.COOKIES.get("refresh_token")
 
-        # 🔥 Clear refresh token cookie
-        response.delete_cookie(
-            key="refresh_token",
-            path="/",
-        )
+        if token:
+            try:
+                RefreshToken(token).blacklist()
+            except:
+                pass
 
+        response = Response({"message": "Logged out"})
+        response.delete_cookie("refresh_token")
         return response
+    
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({
+            "username": request.user.username,
+            "email": request.user.email,
+        })
