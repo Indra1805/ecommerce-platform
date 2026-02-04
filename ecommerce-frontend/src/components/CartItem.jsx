@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 export default function CartItem({ item }) {
@@ -6,7 +7,12 @@ export default function CartItem({ item }) {
 
   return (
     <div className="flex items-center justify-between bg-white border rounded-xl p-4">
-      <div className="flex items-center gap-4">
+
+      {/* CLICKABLE PRODUCT INFO */}
+      <Link
+        to={`/product/${product.id}`}
+        className="flex items-center gap-4 hover:opacity-90"
+      >
         <img
           src={product.image}
           alt={product.title}
@@ -19,12 +25,15 @@ export default function CartItem({ item }) {
             ₹{product.price}
           </p>
         </div>
-      </div>
+      </Link>
 
+      {/* ACTIONS */}
       <div className="flex items-center gap-3">
+
         <button
           onClick={() => updateQty(item.id, quantity - 1)}
           className="px-3 py-1 border rounded cursor-pointer"
+          disabled={quantity <= 1}
         >
           −
         </button>
@@ -44,6 +53,7 @@ export default function CartItem({ item }) {
         >
           Remove
         </button>
+
       </div>
     </div>
   );
