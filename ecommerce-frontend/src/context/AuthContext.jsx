@@ -1,38 +1,50 @@
+// context/AuthContext.jsx
+
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   loginUser,
   logoutUser,
   refreshAccessToken,
   fetchMe,
+  registerUser,
 } from "../services/auth";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // ✅ SILENT BOOTSTRAP
   useEffect(() => {
     const init = async () => {
       try {
-        await refreshAccessToken();
-        const me = await fetchMe();
+        const access = await refreshAccessToken();
+        const me = await fetchMe(access);
+
         setUser(me);
         setIsAuthenticated(true);
       } catch {
+        // 🔥 THIS IS NORMAL FOR GUEST USERS
         setUser(null);
         setIsAuthenticated(false);
       } finally {
         setLoading(false);
       }
     };
+
     init();
   }, []);
 
+  const register = async (data) => {
+    await registerUser(data);
+  };
+
   const login = async (cred) => {
-    await loginUser(cred);
-    const me = await fetchMe();
+    const data = await loginUser(cred);
+    const me = await fetchMe(data.access);
+
     setUser(me);
     setIsAuthenticated(true);
   };
@@ -45,7 +57,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, loading, login, logout }}
+      value={{ user, isAuthenticated, loading, login, logout, register }}
     >
       {children}
     </AuthContext.Provider>

@@ -9,13 +9,11 @@ export default function Cart() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // SERVER CART SHAPE
   const total = cart.reduce(
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
 
-  // EMPTY CART
   if (cart.length === 0) {
     return (
       <div className="text-center py-20">
@@ -36,15 +34,22 @@ export default function Cart() {
     );
   }
 
-  // PLACE ORDER
+  // ✅ SAFE CHECKOUT
   const handleCheckout = async () => {
     try {
       setLoading(true);
-      await createOrder(cart);
-      clearCart();
-      navigate("/orders");
+
+      const order = await createOrder(cart); // only this matters
+      console.log(order)
+      if (order?.id) {
+        clearCart();
+        navigate("/orders");
+      } else {
+        throw new Error("Order not created");
+      }
+
     } catch (err) {
-      console.error("Order failed", err);
+      console.error("Checkout error:", err);
       alert("Failed to place order. Please try again.");
     } finally {
       setLoading(false);
@@ -61,19 +66,18 @@ export default function Cart() {
         ))}
       </div>
 
-      {/* SUMMARY */}
       <div className="flex justify-end mt-8">
         <div className="bg-white border rounded-xl p-4 w-full sm:w-80">
           <div className="flex justify-between mb-2">
             <span className="text-gray-600">Subtotal</span>
             <span className="font-medium">
-              ${total.toFixed(2)}
+              ₹{total.toFixed(2)}
             </span>
           </div>
 
           <div className="flex justify-between text-lg font-bold">
             <span>Total</span>
-            <span>${total.toFixed(2)}</span>
+            <span>₹{total.toFixed(2)}</span>
           </div>
 
           <button

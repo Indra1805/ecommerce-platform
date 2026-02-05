@@ -41,11 +41,11 @@ export default function Wishlist() {
             >
               {/* IMAGE */}
               <Link to={`/product/${product.id}`} className="block">
-                <div className="h-44 sm:h-48 flex items-center justify-center bg-gray-50 mt-2">
+                <div className="h-44 sm:h-48 w-full overflow-hidden bg-gray-50">
                   <img
                     src={product.image}
                     alt={product.title}
-                    className="max-h-full object-contain"
+                    className="w-full h-full object-cover"
                   />
                 </div>
               </Link>

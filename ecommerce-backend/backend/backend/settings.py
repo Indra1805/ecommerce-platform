@@ -1,8 +1,4 @@
-"""
-Django settings for backend project.
-
-Configured for local development with environment variables.
-"""
+# backend/settings.py
 
 from pathlib import Path
 import os
@@ -10,29 +6,32 @@ from datetime import timedelta
 from dotenv import load_dotenv
 
 # --------------------------------------------------
-# Base directory
+# BASE DIR
 # --------------------------------------------------
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Load environment variables from .env
+# Load .env ONCE
 load_dotenv(BASE_DIR / ".env")
 
 # --------------------------------------------------
-# Core settings
+# CORE
 # --------------------------------------------------
+
 SECRET_KEY = os.getenv("SECRET_KEY")
+
 if not SECRET_KEY:
-    raise RuntimeError("SECRET_KEY is not set in environment variables")
+    raise RuntimeError("SECRET_KEY missing in .env")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
 ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 # --------------------------------------------------
-# Application definition
+# APPS
 # --------------------------------------------------
+
 INSTALLED_APPS = [
-    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -40,18 +39,21 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
-    # Third-party
+    "corsheaders",
     "rest_framework",
     "rest_framework_simplejwt",
-    "corsheaders",
     "rest_framework_simplejwt.token_blacklist",
 
-    # Local apps
+    "users",
     "products",
     "wishlist",
     "cart",
     "orders",
 ]
+
+# --------------------------------------------------
+# MIDDLEWARE
+# --------------------------------------------------
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -64,7 +66,16 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# --------------------------------------------------
+# URL / WSGI
+# --------------------------------------------------
+
 ROOT_URLCONF = "backend.urls"
+WSGI_APPLICATION = "backend.wsgi.application"
+
+# --------------------------------------------------
+# TEMPLATES
+# --------------------------------------------------
 
 TEMPLATES = [
     {
@@ -81,32 +92,21 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "backend.wsgi.application"
-
 # --------------------------------------------------
-# Database
+# DATABASE
 # --------------------------------------------------
-DATABASE_URL = os.getenv("DATABASE_URL")
 
-if DATABASE_URL and DATABASE_URL.startswith("sqlite"):
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
-else:
-    # Placeholder for PostgreSQL (can be wired later)
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+}
 
 # --------------------------------------------------
-# Password validation
+# PASSWORDS
 # --------------------------------------------------
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -115,63 +115,69 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # --------------------------------------------------
-# Internationalization
+# I18N
 # --------------------------------------------------
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "Asia/Kolkata"
 USE_I18N = True
 USE_TZ = True
 
 # --------------------------------------------------
-# Static files
+# STATIC
 # --------------------------------------------------
+
 STATIC_URL = "/static/"
 
 # --------------------------------------------------
-# CORS & CSRF
+# CORS / CSRF
 # --------------------------------------------------
+
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS", ""
-).split(",")
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 
-CSRF_TRUSTED_ORIGINS = os.getenv(
-    "CSRF_TRUSTED_ORIGINS", ""
-).split(",")
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+]
 
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SAMESITE = "Lax"
 
-SESSION_COOKIE_SECURE = False  # True in production (HTTPS)
-CSRF_COOKIE_SECURE = False     # True in production (HTTPS)
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 
 # --------------------------------------------------
-# Django REST Framework
+# DRF
 # --------------------------------------------------
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": (
-        "rest_framework.permissions.IsAuthenticated",
+        "rest_framework.permissions.AllowAny",
     ),
 }
 
 # --------------------------------------------------
-# JWT Configuration
+# SIMPLE JWT
 # --------------------------------------------------
+
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(
-        minutes=int(os.getenv("ACCESS_TOKEN_LIFETIME_MINUTES", 5))
-    ),
-    "REFRESH_TOKEN_LIFETIME": timedelta(
-        days=int(os.getenv("REFRESH_TOKEN_LIFETIME_DAYS", 7))
-    ),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": True,
+
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 # --------------------------------------------------
-# Default primary key field type
+# DEFAULT PK
 # --------------------------------------------------
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

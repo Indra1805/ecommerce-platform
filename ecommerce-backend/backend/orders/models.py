@@ -19,10 +19,17 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+
+    product_id = models.IntegerField()
     product_title = models.CharField(max_length=255)
     product_price = models.DecimalField(max_digits=10, decimal_places=2)
+    product_image = models.URLField()
+    product_description = models.TextField()
+
     quantity = models.PositiveIntegerField()
 
-    def __str__(self):
-        return self.product_title

@@ -7,6 +7,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from .serializers import OrderSerializer
 from .models import Order, OrderItem
 from rest_framework.exceptions import PermissionDenied
+from cart.models import CartItem
 
 # Create your views here.
 
@@ -37,15 +38,19 @@ class CreateOrderView(APIView):
         for item in cart:
             OrderItem.objects.create(
                 order=order,
+                product_id=item["product"]["id"],
                 product_title=item["product"]["title"],
                 product_price=Decimal(str(item["product"]["price"])),
+                product_image=item["product"]["image"],
+                product_description=item["product"]["description"],
                 quantity=int(item["quantity"]),
             )
 
-        return Response(
-            {"order_id": order.id},
-            status=status.HTTP_201_CREATED
-        )
+        # ✅ CLEAR CART AFTER ORDER
+        CartItem.objects.filter(user=request.user).delete()
+
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 

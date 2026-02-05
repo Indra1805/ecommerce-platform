@@ -10,8 +10,10 @@ import { useAuth } from "./AuthContext";
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const { isAuthenticated } = useAuth();   // ✅ FIX
+  const { isAuthenticated } = useAuth();
   const [cart, setCart] = useState([]);
+
+  // ---------------- LOAD CART ----------------
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -21,6 +23,8 @@ export function CartProvider({ children }) {
 
     fetchCart().then(setCart);
   }, [isAuthenticated]);
+
+  // ---------------- ACTIONS ----------------
 
   const addToCart = async (product) => {
     await addToCartAPI(product.id);
@@ -39,12 +43,25 @@ export function CartProvider({ children }) {
     setCart((prev) => prev.filter((i) => i.id !== itemId));
   };
 
+  const clearCart = () => {
+    setCart([]);
+  };
+
   const isInCart = (pid) =>
     cart.some((i) => i.product.id === pid);
 
+  // ---------------- PROVIDER ----------------
+
   return (
     <CartContext.Provider
-      value={{ cart, addToCart, updateQty, removeFromCart, isInCart }}
+      value={{
+        cart,
+        addToCart,
+        updateQty,
+        removeFromCart,
+        clearCart,     // ✅ EXPOSED
+        isInCart,
+      }}
     >
       {children}
     </CartContext.Provider>

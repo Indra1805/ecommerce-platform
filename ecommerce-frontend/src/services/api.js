@@ -1,17 +1,20 @@
 import { apiFetch } from "./apiClient";
+import { publicFetch } from "./publicFetch";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // PRODUCTS
 export const fetchProducts = async () => {
-  const res = await apiFetch(`${BASE_URL}/products/`);
+  const res = await publicFetch(`${BASE_URL}/products/`);
   return res.json();
 };
 
 export const fetchProductById = async (id) => {
-  const res = await apiFetch(`${BASE_URL}/product/${id}/`);
+  const res = await publicFetch(`${BASE_URL}/product/${id}/`);
   return res.json();
 };
+
+
 
 // WISHLIST
 export const fetchWishlist = async () => {
@@ -65,11 +68,15 @@ export const removeFromCartAPI = async (itemId) => {
 export const createOrder = async (cart) => {
   const res = await apiFetch(`${BASE_URL}/orders/create/`, {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ cart }),
   });
 
-  return res.json(); // ✅ IMPORTANT
+  return res.json();
 };
+
 
 export const fetchMyOrders = async () => {
   const res = await apiFetch(`${BASE_URL}/orders/my/`);

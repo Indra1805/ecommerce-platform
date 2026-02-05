@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { fetchProducts } from "../services/api";
+import { fetchProductsPublic } from "../services/publicApi";
 import { useSearch } from "../context/SearchContext";
 import CategoryBar from "../components/CategoryBar";
 import ProductCard from "../components/ProductCard";
@@ -19,7 +19,7 @@ export default function Home() {
 
   // FETCH PRODUCTS
   useEffect(() => {
-    fetchProducts()
+    fetchProductsPublic()
       .then(data => setProducts(data))
       .finally(() => setLoading(false));
   }, []);
@@ -98,7 +98,7 @@ export default function Home() {
           No products found.
         </p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
           {filteredProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}

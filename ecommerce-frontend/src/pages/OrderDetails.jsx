@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { fetchOrderById, cancelOrderAPI } from "../services/api";
 
 export default function OrderDetails() {
@@ -38,61 +38,101 @@ export default function OrderDetails() {
   };
 
   if (loading) {
-    return <p className="text-center py-20">Loading order...</p>;
+    return (
+      <p className="text-center py-20 text-gray-500">
+        Loading order...
+      </p>
+    );
   }
 
   if (!order) return null;
 
   return (
-    <div className="max-w-3xl mx-auto px-4">
-      {/* 🔙 Back Button */}
+    <div className="max-w-6xl mx-auto px-4 py-8">
+
+      {/* BACK */}
       <button
         onClick={() => navigate("/orders")}
-        className="inline-block bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 cursor-pointer mb-2"
+        className="mb-4 bg-gray-900 text-white px-6 py-2 rounded-lg hover:bg-gray-800 cursor-pointer"
       >
         ← Back to Orders
       </button>
 
-      <h1 className="text-2xl font-bold mb-4">
-        Order #{order.id}
-      </h1>
+      {/* HEADER */}
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">
+          Order #{order.id}
+        </h1>
 
-      <p className="text-sm text-gray-500 mb-4">
-        Status:{" "}
-        <span
-          className={`font-medium ${
-            order.status === "PLACED"
-              ? "text-green-600"
-              : "text-red-600"
-          }`}
-        >
-          {order.status}
-        </span>
-      </p>
+        <p className="text-gray-500">
+          Status:{" "}
+          <span
+            className={`font-medium ${
+              order.status === "PLACED"
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {order.status}
+          </span>
+        </p>
+      </div>
 
-      <div className="border rounded-xl p-4 space-y-2">
+      {/* PRODUCTS */}
+      <div className="space-y-6">
         {order.items.map((item) => (
           <div
             key={item.id}
-            className="flex justify-between text-sm"
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 bg-white border rounded-xl p-6"
           >
-            <span>
-              {item.product_title} × {item.quantity}
-            </span>
-            <span>₹{item.product_price}</span>
+
+            {/* IMAGE */}
+            <Link to={`/product/${item.product_id}`}>
+              <img
+                src={item.product_image}
+                alt={item.product_title}
+                className="max-h-[300px] object-contain mx-auto"
+              />
+            </Link>
+
+            {/* DETAILS */}
+            <div>
+              <h2 className="text-xl font-bold mb-2">
+                {item.product_title}
+              </h2>
+
+              <p className="text-gray-600 mb-4">
+                {item.product_description}
+              </p>
+
+              <p className="font-medium">
+                Price: ₹{item.product_price}
+              </p>
+
+              <p className="font-medium">
+                Quantity: {item.quantity}
+              </p>
+
+              <p className="font-bold mt-2">
+                Subtotal: ₹
+                {(item.product_price * item.quantity).toFixed(2)}
+              </p>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="font-bold text-right mt-4">
+      {/* TOTAL */}
+      <div className="text-right font-bold text-xl mt-8">
         Total: ₹{order.total_amount}
       </div>
 
+      {/* CANCEL */}
       {order.status === "PLACED" && (
         <button
           onClick={handleCancel}
           disabled={cancelling}
-          className="mt-6 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
+          className="mt-6 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 disabled:opacity-50 cursor-pointer"
         >
           {cancelling ? "Cancelling..." : "Cancel Order"}
         </button>
